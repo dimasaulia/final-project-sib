@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const user = require("./contrrollers");
 const { body } = require("express-validator");
+const middleware = require("../middlewares/authMiddlewares");
 
 router.post(
     "/register",
@@ -15,7 +16,7 @@ router.post(
     body("password").isLength({ min: "8" }),
     user.login
 );
-router.post("/change-password", user.changePassword);
+router.post("/change-password", middleware.loginRequired, user.changePassword);
 router.get("/logout", user.logout);
 
 module.exports = router;

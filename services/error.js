@@ -1,5 +1,5 @@
-const resError = (res, title, errors) => {
-    return res.status(400).json({
+const resError = ({ res, title, errors, code = 400 }) => {
+    return res.status(code).json({
         success: false,
         message: title,
         data: {

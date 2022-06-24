@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const { resError } = require("../services/error");
-const { createToken, expTime } = require("../services/jwt");
+const { createToken, expTime, getToken } = require("../services/jwt");
 const prisma = new PrismaClient();
 const saltRounds = 10;
 
@@ -12,7 +12,7 @@ module.exports.register = async (req, res) => {
     // check first if req have any error
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return resError(res, "Something wrong", errors);
+        return resError({ res, title: "Something wrong", errors });
     }
 
     const { username, password, email } = req.body;
@@ -50,17 +50,22 @@ module.exports.register = async (req, res) => {
             data: {
                 user,
                 profile,
+                token,
             },
         });
     } catch (error) {
-        return resError(res, "Can't create user", error);
+        return resError({ res, title: "Can't create user", errors: error });
     }
 };
 
 module.exports.login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return resError(res, "Something wrong", errors.errors);
+        return resError({
+            res,
+            title: "Something wrong",
+            errors: errors.errors,
+        });
     }
 
     const { username, password } = req.body;
@@ -95,10 +100,11 @@ module.exports.login = async (req, res) => {
             message: "User successfully log in",
             data: {
                 user,
+                token,
             },
         });
     } catch (error) {
-        return resError(res, "Can't logging in user", error);
+        return resError({ res, title: "Can't logging in user", errors: error });
     }
 };
 
@@ -106,31 +112,28 @@ module.exports.changePassword = async (req, res) => {
     // check first if req have any error
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return resError(res, "Something wrong", errors.error);
-    }
-
-    // this must move to middleware
-    const token = req.cookies.jwt;
-    let uuid;
-    if (token) {
-        jwt.verify(token, process.env.SECRET, (err, decode) => {
-            if (err) {
-                return resError(res, "Cookie not match", "Cookies not match");
-            } else {
-                uuid = decode.id;
-            }
+        return resError({
+            res,
+            title: "Something wrong",
+            errors: errors.error,
         });
-    } else {
-        return res.send("you are not allow to perform this opperation");
     }
-    //---------------------------------------
 
-    const { oldPassword, newPassword } = req.body;
-    const hashPassword = bcrypt.hashSync(
-        newPassword,
-        bcrypt.genSaltSync(saltRounds)
-    );
     try {
+        const token = getToken(req);
+        const uuid = jwt.verify(
+            token,
+            process.env.SECRET,
+            (err, decode) => decode.id
+        );
+        //---------------------------------------
+
+        const { oldPassword, newPassword } = req.body;
+        const hashPassword = bcrypt.hashSync(
+            newPassword,
+            bcrypt.genSaltSync(saltRounds)
+        );
+
         // find user
         const user = await prisma.user.findUnique({
             where: {
@@ -146,7 +149,6 @@ module.exports.changePassword = async (req, res) => {
 
         // compare the old password
         const compare = bcrypt.compareSync(oldPassword, user.password);
-        console.log(compare);
         if (!compare) throw "Old password not match";
 
         const updatedUser = await prisma.user.update({
@@ -172,7 +174,11 @@ module.exports.changePassword = async (req, res) => {
             },
         });
     } catch (error) {
-        return resError(res, "Cant change user password", error);
+        return resError({
+            res,
+            title: "Cant change user password",
+            errors: error,
+        });
     }
 };
 

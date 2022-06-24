@@ -12,4 +12,20 @@ const createToken = (id) => {
     });
 };
 
-module.exports = { createToken, expTime };
+const getToken = (req) => {
+    return (
+        (req.headers.jwt && req.headers.jwt.split(" ")[1]) || req.cookies.jwt
+    );
+};
+
+const getUser = (req) => {
+    const UUID = jwt.verify(
+        getToken(req),
+        process.env.SECRET,
+        (err, decode) => {
+            return decode.id;
+        }
+    );
+};
+
+module.exports = { createToken, expTime, getToken, getUser };
