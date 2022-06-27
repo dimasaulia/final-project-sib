@@ -1,0 +1,205 @@
+FORMAT : 1A
+
+# Second Hand API
+
+::: note
+
+> Daftar End Point yang tersedia untuk apliasi second hand
+
+Platform ini merupakan tempat jual-beli barang secara online, khususnya barang
+bekas. Platform ini membuka dan menyediakan berbagai jenis kategori kebutuhan.
+User yang mendaftarkan diri pada aplikasi ini dapat berperan sebagai seller dan
+buyer dengan menggunakan 1 (satu) akun yang sama. Platform ini akan
+mempertemukan seller dan buyer untuk dapat melakukan negosiasi barang dan
+melakukan transaksi langsung diluar platform
+
+:::
+
+# Group Auth
+
+::: note
+    Response code 400 akan diberikan jika terdapat form yang kosong.
+    Sedangkan Response code 401 akan diberikan jika username, password tidak ditemukan atau tidak valid
+::: 
+
+## LOGIN API [/api/user/login]
+
+### Login [POST]
+
+-   Request (application/json)
+
+        { 
+            "username":"string",
+            "password":"string"
+        }
+
+-   Response 200 (application/json)
+
+        {
+            "success": boolean,
+            "message": "string",
+            "data": {
+                "token": "string",
+                "user": {
+                    "id": "string",
+                    "username": "string",
+                    "password": "string"
+                }
+            }
+        }
+
+-   Response 400 (application/json)
+
+        {
+            "success": boolean,
+            "message": "From Error",
+            "data": {
+                "errors": [
+                    {
+                        "value": "",
+                        "msg": "string",
+                        "param": "string",
+                        "location": "string"
+                    }
+                ]
+            }
+        }
+
+-   Response 401 (application/json)
+
+        {
+            "success": boolean,
+            "message": "string",
+            "data": {
+                "errors": "string"
+            }
+        }
+
+## REGISTER API [/api/user/register]
+
+### REGISTER [POST]
+
+-   Request (application/json)
+
+        { 
+            "username":"string",
+            "email":"string",
+            "password":"string"
+        }
+
+-   Response 200 (application/json)
+
+        {
+            "success": boolean,
+            "message": "string",
+            "data": {
+                "token": "string",
+                "user": {
+                    "id": "string",
+                    "username": "string",
+                    "password": "string"
+                }
+            }
+        }
+
+-   Response 400 (application/json)
+
+        {
+            "success": boolean,
+            "message": "From Error",
+            "data": {
+                "errors": [
+                    {
+                        "value": "",
+                        "msg": "string",
+                        "param": "string",
+                        "location": "string"
+                    }
+                ]
+            }
+        }
+
+-   Response 401 (application/json)
+
+        {
+            "success": boolean,
+            "message": "string",
+            "data": {
+                "errors": "string"
+            }
+        }
+
+## REGISTER API [/api/user/logout]
+
+### REGISTER [GET]
+
+- Response 200 (application/json)
+
+        {
+            "success": "boolean",
+            "message": "Successfull log out",
+            "data": ""
+        }
+
+## CHANGE PASSWORD API [/api/user/change-password]
+
+::: note
+    Akses ke url ini memerlukan jwt pada header
+:::
+
+Contoh poenggunaan jwt pada saat mengirim request
+
+```md
+"jwt": "Bearer some_string"
+```
+
+### Login [POST]
+
+-   Request(application/json)
+
+        { 
+            "oldPassword":"string",
+            "newPassword":"string"
+        }
+
+-   Response 200 (application/json)
+
+        {
+            "success": boolean,
+            "message": "string",
+            "data": {
+                "token": "string",
+                "user": {
+                    "id": "string",
+                    "username": "string",
+                    "password": "string"
+                }
+            }
+        }
+
+-   Response 400 (application/json)
+
+        {
+            "success": boolean,
+            "message": "From Error",
+            "data": {
+                "errors": [
+                    {
+                        "value": "",
+                        "msg": "string",
+                        "param": "string",
+                        "location": "string"
+                    }
+                ]
+            }
+        }
+
+-   Response 401 (application/json)
+
+        {
+            "success": boolean,
+            "message": "string",
+            "data": {
+                "errors": "string"
+            }
+        }

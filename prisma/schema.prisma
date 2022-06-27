@@ -59,8 +59,8 @@ model Product {
   description  String
   porductPhoto String
   minimumPrice Int
-  isPublished  Boolean        @default(false)
-  status       Product_Status
+  isPublished  Boolean        @default(true)
+  status       Product_Status @default(Belum_Terjual)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
@@ -73,7 +73,7 @@ model Product {
 
 model Category {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

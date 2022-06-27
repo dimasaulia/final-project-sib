@@ -1,11 +1,11 @@
 require("dotenv").config;
 const jwt = require("jsonwebtoken");
-const { resError } = require("../services/error");
-const { getToken, getUser } = require("../services/jwt");
+const { resError } = require("../services/responseHandler");
+const { getToken, getUser } = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-module.exports.loginRequired = (req, res, next) => {
+const loginRequired = (req, res, next) => {
     const token = getToken(req);
 
     // check if token exits
@@ -45,3 +45,5 @@ module.exports.loginRequired = (req, res, next) => {
         }
     });
 };
+
+module.exports = { loginRequired };

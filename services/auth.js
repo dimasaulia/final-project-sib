@@ -1,0 +1,56 @@
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const maxAge = 3 * 24 * 60 * 60; // 3 days
+
+const expTime = () => {
+    return maxAge;
+};
+
+const createToken = (id) => {
+    return jwt.sign({ id }, process.env.SECRET, {
+        expiresIn: Number(process.env.MAX_AGE) || Number(expTime()),
+    });
+};
+
+const getToken = (req) => {
+    return req.cookies.jwt;
+};
+
+const getUser = (req) => {
+    const UUID = jwt.verify(
+        getToken(req),
+        process.env.SECRET,
+        (err, decode) => {
+            return decode.id;
+        }
+    );
+    return UUID;
+};
+
+const setCookie = ({ res, data }) => {
+    res.cookie("jwt", data, { httpOnly: true, maxAge: expTime() * 1000 });
+};
+
+const setAuthCookie = ({ res, uuid }) => {
+    const token = createToken(uuid);
+    res.cookie("jwt", token, {
+        httpOnly: true,
+        maxAge: expTime() * 1000,
+    });
+    return token;
+};
+
+function ErrorException(type, msg) {
+    this.type = type;
+    this.msg = msg;
+}
+
+module.exports = {
+    createToken,
+    expTime,
+    getToken,
+    getUser,
+    setCookie,
+    setAuthCookie,
+    ErrorException,
+};
