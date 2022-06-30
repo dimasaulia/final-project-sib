@@ -5,12 +5,9 @@ const ROUTER = require("./router");
 const app = express();
 const expbs = require("express-handlebars");
 
-app.engine(
-    "handlebars",
-    expbs.engine({ extname: ".hbs", defaultLayout: "base" })
-);
+app.engine("html", expbs.engine(expbs.create({ extname: ".html" })));
 app.set("views", "views");
-app.set("view engine", "handlebars");
+app.set("view engine", "html");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
@@ -23,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/doc", (req, res) => {
-    res.render("docs");
+    res.render("docs", { layout: false });
 });
 
 app.listen(PORT, () => {
