@@ -1,4 +1,4 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "PRODUCTION") require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const maxAge = 3 * 24 * 60 * 60; // 3 days
 
