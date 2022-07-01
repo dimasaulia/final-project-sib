@@ -92,7 +92,7 @@ model Wishlist {
 model Bid {
   id          Int        @id @default(autoincrement())
   offer_price Int
-  status      Bid_Status
+  status      Bid_Status @default(Ditawar)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 

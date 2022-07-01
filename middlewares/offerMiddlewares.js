@@ -3,39 +3,70 @@ const { resError } = require("../services/responseHandler");
 const { getUser } = require("../services/auth");
 const prisma = new PrismaClient();
 
-const isExist = async (req, res, next) => {
+const isOfferExist = async (req, res, next) => {
     const productId = req.params.id;
     try {
-        const product = await prisma.product.findUnique({
+        const product = await prisma.bid.findUnique({
             where: {
                 id: Number(productId),
             },
         });
-        if (!product) throw "Product not exist";
+        if (!product) throw "Offer not exist";
         return next();
     } catch (error) {
         return resError({
             res,
-            title: "Cant find product",
+            title: "Cant find Offer",
             errors: error,
         });
     }
 };
 
-const isUserProduct = async (req, res, next) => {
+const isUserOffer = async (req, res, next) => {
     const productId = req.params.id;
     const userId = getUser(req);
     try {
-        const product = await prisma.product.findUnique({
+        const product = await prisma.bid.findUnique({
             where: {
                 id: Number(productId),
             },
-            select: {
-                userId: true,
+            include: {
+                bidder: {
+                    where: {
+                        id: userId,
+                    },
+                },
             },
         });
-        // console.log(product, userId, product !== userId);
-        if (product.userId !== userId) throw "This is not your product";
+        if (product.bidder) throw "This is not your offer";
+        return next();
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: "You can't perform this action",
+            errors: error,
+        });
+    }
+};
+
+const isNotUserOffer = async (req, res, next) => {
+    const productId = req.params.id;
+    const userId = getUser(req);
+    try {
+        const product = await prisma.bid.findUnique({
+            where: {
+                id: Number(productId),
+            },
+            include: {
+                bidder: {
+                    where: {
+                        id: userId,
+                    },
+                },
+            },
+        });
+        if (product.bidder) throw "This your own offer";
         return next();
     } catch (error) {
         return resError({
@@ -46,28 +77,4 @@ const isUserProduct = async (req, res, next) => {
     }
 };
 
-const isNotUserProduct = async (req, res, next) => {
-    const productId = req.params.id;
-    const userId = getUser(req);
-    try {
-        const product = await prisma.product.findUnique({
-            where: {
-                id: Number(productId),
-            },
-            select: {
-                userId: true,
-            },
-        });
-        if (product.userId === userId)
-            throw "This is your product, you cant bid your own products";
-        return next();
-    } catch (error) {
-        return resError({
-            res,
-            title: "You can't perform this action",
-            errors: error,
-        });
-    }
-};
-
-module.exports = { isExist, isUserProduct, isNotUserProduct };
+module.exports = { isOfferExist, isUserOffer, isNotUserOffer };
