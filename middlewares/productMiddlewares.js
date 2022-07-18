@@ -4,7 +4,7 @@ const { getUser } = require("../services/auth");
 const prisma = new PrismaClient();
 
 const isExist = async (req, res, next) => {
-    const productId = req.params.id;
+    const productId = req.params.id || req.body.id || req.querys.id;
     try {
         const product = await prisma.product.findUnique({
             where: {
