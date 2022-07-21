@@ -21,6 +21,7 @@ router.post(
 );
 router.post("/change-password", middleware.loginRequired, user.changePassword);
 router.post("/search", middleware.loginRequired, user.search);
+router.get("/list", middleware.loginRequired, user.list);
 router.get("/logout", user.logout);
 
 module.exports = router;

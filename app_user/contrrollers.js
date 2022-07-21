@@ -214,3 +214,26 @@ module.exports.search = async (req, res) => {
         });
     }
 };
+
+module.exports.list = async (req, res) => {
+    try {
+        const user = await prisma.user.findMany({
+            select: {
+                username: true,
+                email: true,
+            },
+        });
+        return resSuccess({
+            res,
+            success: true,
+            message: "Succsesfully list all user",
+            data: user,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant find the user",
+            errors: error,
+        });
+    }
+};
